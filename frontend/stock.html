@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stock In / Stock Out</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <h1>Stock In / Stock Out</h1>
+
+  <form id="stockForm">
+    <label>
+      Product:
+      <select id="product">
+        <option value="">Select product</option>
+        <option value="Milk">Milk</option>
+        <option value="Bread">Bread</option>
+        <option value="Eggs">Eggs</option>
+      </select>
+    </label>
+
+    <label>
+      Action:
+      <select id="action">
+        <option value="">Select action</option>
+        <option value="IN">Stock In</option>
+        <option value="OUT">Stock Out</option>
+      </select>
+    </label>
+
+    <label>
+      Quantity:
+      <input type="number" id="quantity" />
+    </label>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="error" class="error"></p>
+
+  <a href="index.html">⬅ Back to Home</a>
+
+  <script src="js/stock.js"></script>
+</body>
+</html>

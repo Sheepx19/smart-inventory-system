@@ -19,3 +19,17 @@ form.addEventListener("submit", function (e) {
   alert("Stock updated (check console)");
   form.reset();
 });
+async function stockIn() {
+  const data = {
+    productId: document.getElementById("id").value,
+    quantity: document.getElementById("qty").value
+  };
+
+  await fetch("http://localhost:5000/api/products/stock-in", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  loadProducts();
+}

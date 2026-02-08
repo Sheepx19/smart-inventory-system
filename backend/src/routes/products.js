@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// GET all products
+// Get all products
 router.get("/", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM products");
@@ -13,12 +13,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ADD product
+// Add a new product
 router.post("/", async (req, res) => {
   const { name, price, barcode, quantity } = req.body;
 
   if (!name || quantity == null) {
-    return res.status(400).json({ error: "Name and quantity required" });
+    return res.status(400).json({ error: "Name and quantity are required" });
   }
 
   try {
@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// STOCK IN
+// Stock In
 router.post("/stock-in", async (req, res) => {
   const { productId, quantity } = req.body;
 
@@ -66,8 +66,7 @@ router.post("/stock-in", async (req, res) => {
   }
 });
 
-
-// STOCK OUT
+// Stock Out
 router.post("/stock-out", async (req, res) => {
   const { productId, quantity } = req.body;
 
@@ -105,6 +104,5 @@ router.post("/stock-out", async (req, res) => {
     res.status(500).json({ error: "Failed to process stock out" });
   }
 });
-
 
 module.exports = router;

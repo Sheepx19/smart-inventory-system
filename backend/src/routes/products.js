@@ -106,3 +106,4 @@ router.post("/stock-out", async (req, res) => {
 });
 
 module.exports = router;
+module.exports = router;

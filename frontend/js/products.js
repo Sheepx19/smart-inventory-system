@@ -11,17 +11,18 @@ products.forEach(product => {
   li.textContent = `${product.name} - Quantity: ${product.quantity}`;
   list.appendChild(li);
 });
+
 async function loadProducts() {
   const res = await fetch("http://localhost:5000/api/products");
-  const products = await res.json();
+  const data = await res.json();
 
-  const table = document.getElementById("inventory");
-
+  const table = document.getElementById("inventoryTableBody");
   table.innerHTML = "";
 
-  products.forEach(p => {
+  data.forEach(p => {
     table.innerHTML += `
       <tr>
+        <td>${p.id}</td>
         <td>${p.name}</td>
         <td>${p.quantity}</td>
       </tr>
@@ -29,3 +30,4 @@ async function loadProducts() {
   });
 }
 
+window.onload = loadProducts;

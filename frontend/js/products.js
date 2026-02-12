@@ -1,6 +1,8 @@
 async function loadProducts() {
   const res = await fetch("http://localhost:5000/api/products");
-  const data = await res.json();
+  const products = await res.json();
+
+  const table = document.getElementById("inventory");
 
   table.innerHTML = `
     <tr>
@@ -9,10 +11,9 @@ async function loadProducts() {
     </tr>
   `;
 
-  data.forEach(p => {
+  products.forEach(p => {
     table.innerHTML += `
       <tr>
-        <td>${p.id}</td>
         <td>${p.name}</td>
         <td>${p.quantity}</td>
       </tr>

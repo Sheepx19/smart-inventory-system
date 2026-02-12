@@ -3,27 +3,20 @@ const error = document.getElementById("error");
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
+  addProduct(); // <-- THIS is the missing piece
+});
 
+async function addProduct() {
   const name = document.getElementById("name").value.trim();
   const quantity = document.getElementById("quantity").value;
+  const price = document.getElementById("price").value;
 
   if (!name || quantity === "" || quantity < 0) {
     error.textContent = "Please enter a valid name and quantity.";
     return;
   }
 
-  error.textContent = "";
-  console.log("Product added:", { name, quantity });
-
-  alert("Product added (check console)");
-  form.reset();
-});
-async function addProduct() {
-  const data = {
-    name: document.getElementById("name").value,
-    price: document.getElementById("price").value,
-    quantity: document.getElementById("quantity").value
-  };
+  const data = { name, quantity, price };
 
   const res = await fetch("http://localhost:5000/api/products", {
     method: "POST",
@@ -35,7 +28,7 @@ async function addProduct() {
 
   if (res.ok) {
     alert("Product added!");
-    loadProducts();
+    form.reset();
   } else {
     alert(result.message);
   }

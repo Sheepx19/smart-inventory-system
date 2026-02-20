@@ -1,0 +1,30 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --lightwhite: #f3f3f3;
+}
+
+body {
+    background-color: var(--lightwhite);
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+main {
+
+}
+
+section {
+    padding: 1rem;
+}
+
+ul {
+    padding: 1.5rem;
+}
+
+/* .empty-message {
+    display:none;
+} */

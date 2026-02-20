@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <title>Add Product</title>
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- ZXing Barcode Scanner Library -->
   <script src="https://unpkg.com/@zxing/library@latest"></script>
 </head>
 <body>
@@ -13,14 +11,15 @@
   <h1>Add Product</h1>
 
   <form id="addProductForm">
+
     <label>
       Product Name:
-      <input type="text" id="name" />
+      <input type="text" id="name" required />
     </label>
 
     <label>
       Quantity:
-      <input type="number" id="quantity" />
+      <input type="number" id="quantity" min="0" required />
     </label>
 
     <label>
@@ -30,14 +29,17 @@
 
     <label>
       Barcode (optional):
-      <input type="text" id="barcode" />
+      <input type="text" id="barcode" placeholder="Scan or enter barcode" />
     </label>
 
-    <!-- ADDED: Scan Button -->
-    <button type="button" id="scanBtn">Scan Barcode</button>
+    <div class="scan-area">
+      <button type="button" id="scanBtn" class="secondary-btn">
+        📷 Scan Barcode
+      </button>
+      <span id="scanStatus" class="scan-status"></span>
+    </div>
 
-    <!-- ADDED: Webcam Preview -->
-    <video id="cameraPreview" width="300" height="200" style="display:none;" autoplay></video>
+    <video id="cameraPreview" autoplay></video>
 
     <button type="submit">Add Product</button>
   </form>

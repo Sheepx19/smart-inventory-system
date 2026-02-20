@@ -10,15 +10,15 @@
   <h1>Stock In / Stock Out</h1>
 
   <form id="stockForm">
+
     <label>
       Product:
-      <!-- JS will populate this automatically -->
       <select id="product"></select>
     </label>
 
     <label>
       Action:
-      <select id="action">
+      <select id="action" required>
         <option value="">Select action</option>
         <option value="IN">Stock In</option>
         <option value="OUT">Stock Out</option>
@@ -27,7 +27,7 @@
 
     <label>
       Quantity:
-      <input type="number" id="quantity" />
+      <input type="number" id="quantity" min="1" required />
     </label>
 
     <button type="submit">Submit</button>

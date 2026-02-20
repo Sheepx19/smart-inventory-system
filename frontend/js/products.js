@@ -3,7 +3,6 @@ async function loadProducts() {
   const products = await res.json();
 
   const table = document.getElementById("inventory");
-
   table.innerHTML = `
     <tr>
       <th>Product Name</th>

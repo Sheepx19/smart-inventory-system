@@ -1,4 +1,3 @@
-// BARCODE SCANNING
 const scanBtn = document.getElementById("scanBtn");
 const video = document.getElementById("cameraPreview");
 const barcodeInput = document.getElementById("barcode");
@@ -47,18 +46,21 @@ if (scanBtn) {
   });
 }
 
-// ADD PRODUCT
 const form = document.getElementById("addProductForm");
 const error = document.getElementById("error");
+
+const nameInput = document.getElementById("name");
+const quantityInput = document.getElementById("quantity");
+const priceInput = document.getElementById("price");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const data = {
-    name: name.value.trim(),
-    quantity: quantity.value,
-    price: price.value,
-    barcode: barcode.value
+    name: nameInput.value.trim(),
+    quantity: Number(quantityInput.value),
+    price: priceInput.value,
+    barcode: barcodeInput.value
   };
 
   if (!data.name || data.quantity === "") {
@@ -78,6 +80,6 @@ form.addEventListener("submit", async (e) => {
     scanStatus.textContent = "";
   } else {
     const result = await res.json();
-    alert(result.message);
+    alert(result.error || result.message);
   }
 });

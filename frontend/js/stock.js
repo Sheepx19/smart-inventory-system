@@ -1,25 +1,32 @@
 const form = document.getElementById("stockForm");
 const error = document.getElementById("error");
+const dropdown = document.getElementById("product");
 
 // Load products into dropdown
 async function loadProductsDropdown() {
-  const res = await fetch("http://localhost:5000/api/products");
-  const products = await res.json();
+  try {
+    const res = await fetch("http://localhost:5000/api/products");
+    const products = await res.json();
 
-  const dropdown = document.getElementById("product");
-  dropdown.innerHTML = `<option value="">Select product</option>`;
+    dropdown.innerHTML = '<option value="">Select product</option>';
 
-  products.forEach(p => {
-    dropdown.innerHTML += `<option value="${p.product_id}">${p.name}</option>`;
-  });
+    products.forEach(p => {
+      const option = document.createElement("option");
+      option.value = p._id;      // ✅ FIX HERE
+      option.textContent = p.name;
+      dropdown.appendChild(option);
+    });
+  } catch {
+    error.textContent = "Failed to load products.";
+  }
 }
 
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const productId = document.getElementById("product").value;
+  const productId = dropdown.value;
   const action = document.getElementById("action").value;
-  const quantity = document.getElementById("quantity").value;
+  const quantity = Number(document.getElementById("quantity").value);
 
   if (!productId || !action || quantity <= 0) {
     error.textContent = "Please fill out all fields correctly.";

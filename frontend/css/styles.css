@@ -112,3 +112,111 @@ button {
   border-radius: 18px;
   width: 100%;
 }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 32px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #5f574d;
+  text-decoration: none;
+  background: #f1ece5;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.back-link:hover {
+  background: #e6dfd5;
+  transform: translateX(-2px);
+}
+
+button {
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: none;
+  background: #c4b8a9;
+  color: #2f2a25;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+  background: #b9ad9e;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.secondary-btn {
+  background: #e2dbd1;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+  background: #d7cfc4;
+}
+
+form {
+  background: #f6f2ec;
+  padding: 40px;
+  border-radius: 28px;
+  max-width: 520px;
+  display: grid;
+  gap: 22px;
+}
+
+input,
+select {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #ddd6cc;
+  font-size: 0.95rem;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #b9ad9e;
+}
+
+.scan-status {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.success-text {
+  color: #2f7d4a;
+}
+
+.error-text {
+  color: #9c2f2f;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 14px 18px;
+}
+
+th {
+  font-size: 0.85rem;
+  color: #6d665d;
+  border-bottom: 2px solid #ddd6cc;
+}
+
+td {
+  border-bottom: 1px solid #e6dfd5;
+}
+

@@ -2,14 +2,25 @@
 <html>
 <head>
     <title>Barcode Scanner</title>
+    <link rel="stylesheet" href="scan.css">
 </head>
+
 <body>
+
+<div class="scan-container">
+
     <h2>Scan Product</h2>
 
     <div id="reader"></div>
-    <div id="status"></div>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="scanner.js"></script>
+    <div id="status" class="scan-status"></div>
+
+    <a href="index.html" class="back-link">← Back to Home</a>
+
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="scanner.js"></script>
+
 </body>
 </html>

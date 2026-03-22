@@ -1,85 +1,81 @@
-const scanBtn = document.getElementById("scanBtn");
-const video = document.getElementById("cameraPreview");
-const barcodeInput = document.getElementById("barcode");
-const scanStatus = document.getElementById("scanStatus");
-
-const codeReader = new ZXing.BrowserMultiFormatReader();
-
-if (scanBtn) {
-  scanBtn.addEventListener("click", async () => {
-    scanStatus.textContent = "Starting camera...";
-    scanStatus.className = "scan-status";
-
-    try {
-      video.style.display = "block";
-
-      const devices = await codeReader.listVideoInputDevices();
-      if (!devices.length) {
-        scanStatus.textContent = "No camera found.";
-        scanStatus.classList.add("error-text");
-        return;
-      }
-
-      codeReader.decodeFromVideoDevice(
-        devices[0].deviceId,
-        video,
-        (result, err) => {
-          if (result) {
-            barcodeInput.value = result.text;
-            scanStatus.textContent = "✔ Barcode scanned successfully";
-            scanStatus.classList.add("success-text");
-
-            codeReader.reset();
-            video.style.display = "none";
-          }
-
-          if (err && !(err instanceof ZXing.NotFoundException)) {
-            scanStatus.textContent = "Scan failed. Try again.";
-            scanStatus.classList.add("error-text");
-          }
-        }
-      );
-    } catch {
-      scanStatus.textContent = "Camera access denied.";
-      scanStatus.classList.add("error-text");
-    }
-  });
+function showBanner(message, type = "success") {
+    const banner = document.getElementById("banner");
+    banner.textContent = message;
+    banner.className = `banner show ${type}`;
 }
 
-const form = document.getElementById("addProductForm");
-const error = document.getElementById("error");
+// SCAN BARCODE
+document.getElementById("scanBtn").addEventListener("click", async () => {
+    const video = document.getElementById("cameraPreview");
+    video.style.display = "block";
 
-const nameInput = document.getElementById("name");
-const quantityInput = document.getElementById("quantity");
-const priceInput = document.getElementById("price");
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+    });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    video.srcObject = stream;
 
-  const data = {
-    name: nameInput.value.trim(),
-    quantity: Number(quantityInput.value),
-    price: priceInput.value,
-    barcode: barcodeInput.value
-  };
+    const barcodeDetector = new BarcodeDetector({
+        formats: ["code_128", "ean_13", "ean_8", "upc_a"]
+    });
 
-  if (!data.name || data.quantity === "") {
-    error.textContent = "Please enter a valid name and quantity.";
-    return;
-  }
+    const scanLoop = setInterval(async () => {
+        try {
+            const barcodes = await barcodeDetector.detect(video);
+            if (barcodes.length > 0) {
+                const code = barcodes[0].rawValue;
 
-  const res = await fetch("http://localhost:5000/api/products", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
+                document.getElementById("barcode").value = code;
 
-  if (res.ok) {
-    alert("Product added!");
-    form.reset();
-    scanStatus.textContent = "";
-  } else {
-    const result = await res.json();
-    alert(result.error || result.message);
-  }
+                showBanner("Barcode scanned: " + code, "success");
+
+                clearInterval(scanLoop);
+                stream.getTracks().forEach(t => t.stop());
+                video.style.display = "none";
+            }
+        } catch (err) {
+            console.log("Scanning error:", err);
+        }
+    }, 300);
+});
+
+// ADD PRODUCT
+document.getElementById("addProductForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const quantity = Number(document.getElementById("quantity").value);
+    const price = document.getElementById("price").value;
+    const barcode = document.getElementById("barcode").value;
+
+    if (!name || quantity <= 0) {
+        showBanner("Please fill out required fields correctly.", "error");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/api/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, quantity, price, barcode })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            showBanner(data.error || "Failed to add product.", "error");
+            return;
+        }
+
+        showBanner("Product added successfully!", "success");
+
+        const floatBtn = document.getElementById("floatingViewBtn");
+        floatBtn.style.display = "block";
+        floatBtn.onclick = () => window.location.href = "products.html";
+
+        e.target.reset();
+
+    } catch (err) {
+        showBanner("Server unavailable.", "error");
+    }
 });

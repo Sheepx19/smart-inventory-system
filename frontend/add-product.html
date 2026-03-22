@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Add Product</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-  <h1>Add Product</h1>
+    <!-- Banner -->
+    <div id="banner" class="banner"></div>
 
-  <form id="addProductForm">
+    <!-- Floating Button (hidden by default) -->
+    <button id="floatingViewBtn">View Products →</button>
 
-    <label>
-      Product Name:
-      <input type="text" id="name" required />
-    </label>
+    <form id="addProductForm">
+        <h2>Add Product</h2>
 
-    <label>
-      Quantity:
-      <input type="number" id="quantity" min="0" required />
-    </label>
+        <label>
+            Product Name:
+            <input type="text" id="name" required>
+        </label>
 
-    <label>
-      Price (optional):
-      <input type="number" id="price" />
-    </label>
+        <label>
+            Quantity:
+            <input type="number" id="quantity" required>
+        </label>
 
-    <label>
-      Barcode (optional):
-      <input type="text" id="barcode" placeholder="Scan or enter barcode" />
-    </label>
+        <label>
+            Price (optional):
+            <input type="number" id="price" step="0.01">
+        </label>
 
-    <div class="scan-area">
-      <button type="button" id="scanBtn" class="secondary-btn">
-        📷 Scan Barcode
-      </button>
-      <span id="scanStatus" class="scan-status"></span>
-    </div>
+        <label>
+            Barcode (optional):
+            <input type="text" id="barcode">
+        </label>
 
-    <video id="cameraPreview" autoplay></video>
+        <!-- Scan Button -->
+        <button type="button" id="scanBtn" class="secondary-btn">Scan Barcode</button>
 
-    <button type="submit">Add Product</button>
-  </form>
+        <!-- Camera Preview -->
+        <video id="cameraPreview" autoplay playsinline></video>
 
-  <p id="error" class="error"></p>
+        <button type="submit">Add Product</button>
 
-<a href="index.html" class="back-link">← Back to Home</a>
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </form>
 
-  <script src="js/add-product.js"></script>
+    <script src="js/add-product.js"></script>
 </body>
 </html>

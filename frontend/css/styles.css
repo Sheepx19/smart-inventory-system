@@ -220,3 +220,60 @@ td {
   border-bottom: 1px solid #e6dfd5;
 }
 
+.banner button {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #b9ad9e;
+  color: #2f2a25;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.banner button:hover {
+  background: #a89d90;
+}
+.banner {
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: none;
+}
+
+.banner.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.banner.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.banner.show {
+  display: block;
+}
+
+#floatingViewBtn {
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 14px 20px;
+  border-radius: 20px;
+  background: #b9ad9e;
+  color: #2f2a25;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.2s;
+}
+
+#floatingViewBtn:hover {
+  background: #a89d90;
+  transform: translateY(-2px);
+}
+

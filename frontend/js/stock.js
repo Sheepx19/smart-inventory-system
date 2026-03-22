@@ -1,6 +1,16 @@
 const form = document.getElementById("stockForm");
-const error = document.getElementById("error");
 const dropdown = document.getElementById("product");
+
+function showBanner(message, type = "success") {
+  const banner = document.getElementById("banner");
+  banner.textContent = message;
+  banner.className = `banner show ${type}`;
+  setTimeout(() => banner.classList.remove("show"), 3000);
+}
+
+function showError(msg) { showBanner(msg, "error"); }
+function showSuccess(msg) { showBanner(msg, "success"); }
+function showWarning(msg) { showBanner(msg, "warning"); }
 
 // Load products into dropdown
 async function loadProductsDropdown() {
@@ -12,12 +22,12 @@ async function loadProductsDropdown() {
 
     products.forEach(p => {
       const option = document.createElement("option");
-      option.value = p._id;      // ✅ FIX HERE
+      option.value = p.product_id;          // ✅ FIXED
       option.textContent = p.name;
       dropdown.appendChild(option);
     });
   } catch {
-    error.textContent = "Failed to load products.";
+    showError("Failed to load products.");
   }
 }
 
@@ -29,11 +39,9 @@ form.addEventListener("submit", async function (e) {
   const quantity = Number(document.getElementById("quantity").value);
 
   if (!productId || !action || quantity <= 0) {
-    error.textContent = "Please fill out all fields correctly.";
+    showError("Please fill out all fields correctly.");
     return;
   }
-
-  error.textContent = "";
 
   const data = { productId, quantity };
 
@@ -41,18 +49,24 @@ form.addEventListener("submit", async function (e) {
   if (action === "IN") url = "http://localhost:5000/api/products/stock-in";
   if (action === "OUT") url = "http://localhost:5000/api/products/stock-out";
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
 
-  if (res.ok) {
-    alert("Stock updated!");
-    form.reset();
-  } else {
     const result = await res.json();
-    alert(result.message);
+
+    if (res.ok) {
+      showSuccess("Stock updated!");
+      if (result.lowStock) showWarning("⚠ Low stock!");
+      form.reset();
+    } else {
+      showError(result.error || "Something went wrong.");
+    }
+  } catch {
+    showError("Server unavailable.");
   }
 });
 

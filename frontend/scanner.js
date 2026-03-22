@@ -1,14 +1,15 @@
 let scanningLocked = false;
 
-function showStatus(msg, color) {
-    const s = document.getElementById("status");
-    s.innerText = msg;
-    s.style.color = color;
+function showBanner(message, type = "success") {
+    const banner = document.getElementById("banner");
+    banner.textContent = message;
+    banner.className = `banner show ${type}`;
+    setTimeout(() => banner.classList.remove("show"), 3000);
 }
 
-function showError(msg) { showStatus(msg, "red"); }
-function showSuccess(msg) { showStatus(msg, "green"); }
-function showWarning(msg) { showStatus(msg, "orange"); }
+function showError(msg) { showBanner(msg, "error"); }
+function showSuccess(msg) { showBanner(msg, "success"); }
+function showWarning(msg) { showBanner(msg, "warning"); }
 
 async function handleBarcode(barcode) {
     if (!barcode || barcode.length < 6) {
@@ -27,7 +28,7 @@ async function handleBarcode(barcode) {
             return;
         }
 
-        updateStock(barcode);
+        await updateStock(barcode);
 
     } catch (error) {
         showError("Server error");
@@ -48,9 +49,10 @@ async function updateStock(barcode) {
 
         const data = await response.json();
 
-        if (!response.ok) showError(data.error || "Update failed");
-        else {
-            showSuccess(data.message);
+        if (!response.ok) {
+            showError(data.error || "Update failed");
+        } else {
+            showSuccess(data.message || "Stock updated!");
             if (data.lowStock) showWarning("⚠ Low stock!");
         }
 

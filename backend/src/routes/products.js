@@ -7,7 +7,7 @@ router.get("/", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM products");
     res.json(rows);
-  } catch (err) {
+  } catch (err) { 
     console.error(err);
     res.status(500).json({ error: "Failed to fetch products" });
   }
@@ -52,16 +52,23 @@ router.post("/", async (req, res) => {
       [name, price || null, barcode || null, quantity]
     );
 
-    res.status(201).json({
+    return res.status(201).json({
+      message: "Product added successfully",
       id: result.insertId,
       name,
       price,
       barcode,
       quantity
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to add product" });
+
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Barcode already exists" });
+    }
+
+    return res.status(500).json({ error: "Failed to add product" });
   }
 });
 

@@ -8,15 +8,6 @@ export default function HomeScreen() {
       <Text style={styles.title}>Welcome to Stockly</Text>
       <Text style={styles.subtitle}>Manage your inventory with ease</Text>
 
-      {/* Add Product */}
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => router.push("/add-product")}
-      >
-        <Ionicons name="add-circle-outline" size={32} color="#007AFF" />
-        <Text style={styles.cardText}>Add Product</Text>
-      </TouchableOpacity>
-
       {/* View Products */}
       <TouchableOpacity
         style={styles.card}
@@ -24,6 +15,15 @@ export default function HomeScreen() {
       >
         <Ionicons name="list-outline" size={32} color="#28a745" />
         <Text style={styles.cardText}>View Products</Text>
+      </TouchableOpacity>
+
+      {/* Add Product */}
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => router.push("/add-product")}
+      >
+        <Ionicons name="add-circle-outline" size={32} color="#007AFF" />
+        <Text style={styles.cardText}>Add Product</Text>
       </TouchableOpacity>
 
       {/* Stock In / Out */}

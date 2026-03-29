@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function ScanScreen() {
+  const params = useLocalSearchParams(); // ⭐ Detect where scan came from
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -14,12 +15,16 @@ export default function ScanScreen() {
   }, []);
 
   if (!permission) {
-    return <Text>Requesting camera permission...</Text>;
+    return (
+      <View style={styles.center}>
+        <Text>Requesting camera permission...</Text>
+      </View>
+    );
   }
 
   if (!permission.granted) {
     return (
-      <View style={{ padding: 20 }}>
+      <View style={styles.center}>
         <Text style={{ marginBottom: 10 }}>Camera access is required</Text>
         <Button title="Allow Camera" onPress={requestPermission} />
       </View>
@@ -28,6 +33,14 @@ export default function ScanScreen() {
 
   const handleBarcodeScanned = ({ data }) => {
     setScanned(true);
+
+    // ⭐ If scan came from Stock page
+    if (params.from === "stock") {
+      router.push(`/stock?barcode=${data}`);
+      return;
+    }
+
+    // ⭐ Default → Add Product
     router.push(`/add-product?barcode=${data}`);
   };
 
@@ -42,8 +55,23 @@ export default function ScanScreen() {
       />
 
       {scanned && (
-        <Button title="Scan Again" onPress={() => setScanned(false)} />
+        <View style={styles.scanAgainBox}>
+          <Button title="Scan Again" onPress={() => setScanned(false)} />
+        </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scanAgainBox: {
+    position: "absolute",
+    bottom: 40,
+    alignSelf: "center",
+  },
+});

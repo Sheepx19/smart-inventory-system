@@ -2,18 +2,22 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Get all products
+// ===============================
+// GET ALL PRODUCTS
+// ===============================
 router.get("/", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM products");
     res.json(rows);
-  } catch (err) { 
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 });
 
-// Get product by barcode
+// ===============================
+// GET PRODUCT BY BARCODE
+// ===============================
 router.get("/barcode/:code", async (req, res) => {
   const { code } = req.params;
 
@@ -38,7 +42,32 @@ router.get("/barcode/:code", async (req, res) => {
   }
 });
 
-// Add a new product
+// ===============================
+// ⭐ GET PRODUCT BY ID (NEW ROUTE)
+// ===============================
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM products WHERE product_id = ? LIMIT 1",
+      [id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch product" });
+  }
+});
+
+// ===============================
+// ADD NEW PRODUCT
+// ===============================
 router.post("/", async (req, res) => {
   const { name, price, barcode, quantity } = req.body;
 
@@ -72,7 +101,9 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Low-stock check helper
+// ===============================
+// LOW STOCK CHECK HELPER
+// ===============================
 async function checkLowStock(productId) {
   const [rows] = await db.query(
     "SELECT quantity, low_stock_threshold FROM products WHERE product_id = ?",
@@ -84,7 +115,9 @@ async function checkLowStock(productId) {
   return rows[0].quantity < rows[0].low_stock_threshold;
 }
 
-// Update stock using barcode
+// ===============================
+// UPDATE STOCK BY BARCODE
+// ===============================
 router.post("/update-by-barcode", async (req, res) => {
   const { barcode, quantityChange } = req.body;
 
@@ -135,7 +168,9 @@ router.post("/update-by-barcode", async (req, res) => {
   }
 });
 
-// Stock In
+// ===============================
+// STOCK IN
+// ===============================
 router.post("/stock-in", async (req, res) => {
   const { productId, quantity } = req.body;
 
@@ -163,7 +198,9 @@ router.post("/stock-in", async (req, res) => {
   }
 });
 
-// Stock Out
+// ===============================
+// STOCK OUT
+// ===============================
 router.post("/stock-out", async (req, res) => {
   const { productId, quantity } = req.body;
 

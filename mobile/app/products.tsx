@@ -16,6 +16,7 @@ export default function ProductsScreen() {
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState([]);
   const [category, setCategory] = useState("all");
+  const [lowStockCount, setLowStockCount] = useState(0);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
@@ -23,6 +24,12 @@ export default function ProductsScreen() {
       .then((data) => {
         setProducts(data);
         setFiltered(data);
+
+        const low = data.filter(
+          (p) => p.quantity <= p.low_stock_threshold
+        ).length;
+
+        setLowStockCount(low);
       })
       .catch((err) => console.log("Error:", err));
   }, []);
@@ -48,21 +55,29 @@ export default function ProductsScreen() {
 
     return (
       <TouchableOpacity
-        style={styles.row}
+        style={[styles.row, lowStock && styles.lowRow]}
         onPress={() => router.push(`/product-details?id=${item.product_id}`)}
       >
         <View style={styles.rowLeft}>
-          <Ionicons name="cube-outline" size={22} color="#444" />
-          <Text style={styles.name}>{item.name}</Text>
+          <Ionicons
+            name="cube-outline"
+            size={22}
+            color={lowStock ? "#d9534f" : "#444"}
+          />
+          <Text style={[styles.name, lowStock && styles.lowName]}>
+            {item.name}
+          </Text>
         </View>
 
         <View
           style={[
             styles.qtyBadge,
-            { backgroundColor: lowStock ? "#ff4d4d" : "#4CAF50" },
+            { backgroundColor: lowStock ? "#d9534f" : "#4CAF50" },
           ]}
         >
-          <Text style={styles.qtyText}>{item.quantity}</Text>
+          <Text style={styles.qtyText}>
+            {item.quantity} {lowStock && "⚠️"}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -70,6 +85,16 @@ export default function ProductsScreen() {
 
   return (
     <View style={styles.container}>
+      {lowStockCount > 0 && (
+        <View style={styles.banner}>
+          <Ionicons name="warning-outline" size={22} color="white" />
+          <Text style={styles.bannerText}>
+            {lowStockCount} product
+            {lowStockCount > 1 ? "s" : ""} low on stock
+          </Text>
+        </View>
+      )}
+
       <Text style={styles.title}>Products</Text>
 
       <View style={styles.searchBox}>
@@ -83,7 +108,7 @@ export default function ProductsScreen() {
       </View>
 
       <View style={styles.filterRow}>
-        {["all", "food", "drinks", "spices"].map((cat) => (
+        {["all"].map((cat) => (
           <TouchableOpacity
             key={cat}
             style={[
@@ -115,7 +140,23 @@ export default function ProductsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1 },
+  container: { padding: 20, flex: 1, backgroundColor: "#f8f8f8" },
+
+  banner: {
+    backgroundColor: "#d9534f",
+    padding: 12,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  bannerText: {
+    color: "white",
+    fontSize: 16,
+    marginLeft: 8,
+    fontWeight: "600",
+  },
+
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
 
   searchBox: {
@@ -163,14 +204,26 @@ const styles = StyleSheet.create({
     borderColor: "#eee",
     alignItems: "center",
   },
+
+  lowRow: {
+    backgroundColor: "#ffe5e5",
+  },
+
   rowLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
+
   name: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#333",
+  },
+
+  lowName: {
+    color: "#d9534f",
+    fontWeight: "700",
   },
 
   qtyBadge: {

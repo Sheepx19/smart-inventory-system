@@ -5,25 +5,24 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, Stack } from "expo-router";
 import { API_BASE } from "../constants/api";
+import useBanner from "@/components/Banner";
 
 export default function StockScreen() {
   const params = useLocalSearchParams();
+  const { Banner, showBanner } = useBanner();
 
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
-  const [selectedId, setSelectedId] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [quantity, setQuantity] = useState("");
-  const [mode, setMode] = useState("IN"); // IN or OUT
+  const [mode, setMode] = useState("IN");
 
-  // Load all products
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
       .then((res) => res.json())
@@ -31,27 +30,21 @@ export default function StockScreen() {
       .catch(() => {});
   }, []);
 
-  // Auto-select product when barcode scanned
   useEffect(() => {
     if (params.barcode && products.length > 0) {
       const found = products.find((p) => p.barcode == params.barcode);
       if (found) {
         setProduct(found);
-        setSelectedId(found.product_id);
-      } else {
-        Alert.alert("Not Found", "No product matches this barcode");
       }
     }
   }, [params, products]);
 
   const submit = async () => {
-    if (!product) return Alert.alert("Error", "Select a product first");
-    if (!quantity.trim()) return Alert.alert("Error", "Enter a quantity");
+    if (!product) return;
+    if (!quantity.trim()) return;
 
     const qty = Number(quantity);
-    if (isNaN(qty) || qty <= 0) {
-      return Alert.alert("Error", "Quantity must be positive");
-    }
+    if (isNaN(qty) || qty <= 0) return;
 
     const endpoint =
       mode === "IN"
@@ -68,129 +61,131 @@ export default function StockScreen() {
         }),
       });
 
-      const data = await res.json();
-
       if (res.ok) {
-        Alert.alert("Success", mode === "IN" ? "Stock added" : "Stock removed");
+        showBanner("Stock updated", "success");
         setQuantity("");
-      } else {
-        Alert.alert("Error", data.error || "Failed to update stock");
       }
-    } catch (err) {
-      Alert.alert("Error", "Network error");
-    }
+    } catch (err) {}
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Stock In / Stock Out</Text>
+    <>
+      <Banner />
 
-      {/* Product Dropdown */}
-      <View style={styles.dropdownContainer}>
+      <Stack.Screen
+        options={{
+          title: "Stock In / Stock Out",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.replace("/")}>
+              <Ionicons name="arrow-back" size={26} color="black" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Stock In / Stock Out</Text>
+
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            style={styles.dropdownHeader}
+            onPress={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <Text style={styles.dropdownHeaderText}>
+              {product ? product.name : "Select Product"}
+            </Text>
+            <Ionicons
+              name={dropdownOpen ? "chevron-up" : "chevron-down"}
+              size={22}
+              color="#555"
+            />
+          </TouchableOpacity>
+
+          {dropdownOpen && (
+            <View style={styles.dropdownList}>
+              <ScrollView style={{ maxHeight: 250 }}>
+                {products.map((p) => (
+                  <TouchableOpacity
+                    key={p.product_id}
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setProduct(p);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>{p.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+
         <TouchableOpacity
-          style={styles.dropdownHeader}
-          onPress={() => setDropdownOpen(!dropdownOpen)}
+          style={styles.scanButton}
+          onPress={() => router.push("/scan?from=stock")}
         >
-          <Text style={styles.dropdownHeaderText}>
-            {product ? product.name : "Select Product"}
-          </Text>
-          <Ionicons
-            name={dropdownOpen ? "chevron-up" : "chevron-down"}
-            size={22}
-            color="#555"
-          />
+          <Ionicons name="scan-outline" size={22} color="white" />
+          <Text style={styles.scanText}>Scan Barcode</Text>
         </TouchableOpacity>
 
-        {dropdownOpen && (
-          <View style={styles.dropdownList}>
-            <ScrollView style={{ maxHeight: 250 }}>
-              {products.map((p) => (
-                <TouchableOpacity
-                  key={p.product_id}
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setProduct(p);
-                    setSelectedId(p.product_id);
-                    setDropdownOpen(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{p.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+        {product && (
+          <View style={styles.productBox}>
+            <Text style={styles.productName}>{product.name}</Text>
+            <Text style={styles.productDetail}>
+              Current Stock: {product.quantity}
+            </Text>
           </View>
         )}
-      </View>
 
-      {/* Scan Button */}
-      <TouchableOpacity
-        style={styles.scanButton}
-        onPress={() => router.push("/scan?from=stock")}
-      >
-        <Ionicons name="scan-outline" size={22} color="white" />
-        <Text style={styles.scanText}>Scan Barcode</Text>
-      </TouchableOpacity>
+        <View style={styles.toggleRow}>
+          <TouchableOpacity
+            style={[styles.toggleButton, mode === "IN" && styles.activeToggle]}
+            onPress={() => setMode("IN")}
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                mode === "IN" && styles.activeToggleText,
+              ]}
+            >
+              Stock In
+            </Text>
+          </TouchableOpacity>
 
-      {/* Product Info */}
-      {product && (
-        <View style={styles.productBox}>
-          <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.productDetail}>
-            Current Stock: {product.quantity}
-          </Text>
+          <TouchableOpacity
+            style={[styles.toggleButton, mode === "OUT" && styles.activeToggle]}
+            onPress={() => setMode("OUT")}
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                mode === "OUT" && styles.activeToggleText,
+              ]}
+            >
+              Stock Out
+            </Text>
+          </TouchableOpacity>
         </View>
-      )}
 
-      {/* Mode Toggle */}
-      <View style={styles.toggleRow}>
-        <TouchableOpacity
-          style={[styles.toggleButton, mode === "IN" && styles.activeToggle]}
-          onPress={() => setMode("IN")}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              mode === "IN" && styles.activeToggleText,
-            ]}
-          >
-            Stock In
+        <View style={styles.inputBox}>
+          <Ionicons name="cube-outline" size={22} color="#777" />
+          <TextInput
+            placeholder="Quantity"
+            value={quantity}
+            onChangeText={setQuantity}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.submitButton} onPress={submit}>
+          <Text style={styles.submitText}>
+            {mode === "IN" ? "Add Stock" : "Remove Stock"}
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.toggleButton, mode === "OUT" && styles.activeToggle]}
-          onPress={() => setMode("OUT")}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              mode === "OUT" && styles.activeToggleText,
-            ]}
-          >
-            Stock Out
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Quantity Input */}
-      <View style={styles.inputBox}>
-        <Ionicons name="cube-outline" size={22} color="#777" />
-        <TextInput
-          placeholder="Quantity"
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-      </View>
-
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.submitButton} onPress={submit}>
-        <Text style={styles.submitText}>
-          {mode === "IN" ? "Add Stock" : "Remove Stock"}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 

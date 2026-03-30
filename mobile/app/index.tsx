@@ -1,10 +1,16 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
+      {/* Hide default header */}
+      <Stack.Screen options={{ headerShown: false }} />
+
+      {/* Custom App Title */}
+      <Text style={styles.appTitle}>Stockly</Text>
+
       <Text style={styles.title}>Welcome to Stockly</Text>
       <Text style={styles.subtitle}>Manage your inventory with ease</Text>
 
@@ -34,7 +40,6 @@ export default function HomeScreen() {
         <Ionicons name="swap-vertical-outline" size={32} color="#ff9500" />
         <Text style={styles.cardText}>Stock In / Stock Out</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
@@ -45,10 +50,17 @@ const styles = StyleSheet.create({
     padding: 25,
     backgroundColor: "#f5f7fa",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
+
+  appTitle: {
+    fontSize: 34,
+    fontWeight: "900",
     marginTop: 10,
+    marginBottom: 20,
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "800",
     marginBottom: 4,
   },
   subtitle: {
@@ -56,6 +68,7 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 25,
   },
+
   card: {
     backgroundColor: "white",
     padding: 20,

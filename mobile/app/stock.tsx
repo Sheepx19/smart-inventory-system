@@ -23,6 +23,7 @@ export default function StockScreen() {
   const [quantity, setQuantity] = useState("");
   const [mode, setMode] = useState("IN");
 
+  // fetch all products once
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
       .then((res) => res.json())
@@ -30,6 +31,7 @@ export default function StockScreen() {
       .catch(() => {});
   }, []);
 
+  // when barcode is passed, auto-select the product
   useEffect(() => {
     if (params.barcode && products.length > 0) {
       const found = products.find((p) => p.barcode == params.barcode);
@@ -62,6 +64,27 @@ export default function StockScreen() {
       });
 
       if (res.ok) {
+        // calculate new quantity locally
+        const updatedQty =
+          mode === "IN"
+            ? product.quantity + qty
+            : product.quantity - qty;
+
+        // update selected product so UI updates instantly
+        setProduct((prev) => ({
+          ...prev,
+          quantity: updatedQty,
+        }));
+
+        // update products list so dropdown stays in sync
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.product_id === product.product_id
+              ? { ...p, quantity: updatedQty }
+              : p
+          )
+        );
+
         showBanner("Stock updated", "success");
         setQuantity("");
       }
@@ -86,6 +109,7 @@ export default function StockScreen() {
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Stock In / Stock Out</Text>
 
+        {/* Product dropdown */}
         <View style={styles.dropdownContainer}>
           <TouchableOpacity
             style={styles.dropdownHeader}
@@ -121,6 +145,7 @@ export default function StockScreen() {
           )}
         </View>
 
+        {/* Scan barcode */}
         <TouchableOpacity
           style={styles.scanButton}
           onPress={() => router.push("/scan?from=stock")}
@@ -129,6 +154,7 @@ export default function StockScreen() {
           <Text style={styles.scanText}>Scan Barcode</Text>
         </TouchableOpacity>
 
+        {/* Selected product info */}
         {product && (
           <View style={styles.productBox}>
             <Text style={styles.productName}>{product.name}</Text>
@@ -138,6 +164,7 @@ export default function StockScreen() {
           </View>
         )}
 
+        {/* Toggle IN/OUT */}
         <View style={styles.toggleRow}>
           <TouchableOpacity
             style={[styles.toggleButton, mode === "IN" && styles.activeToggle]}
@@ -168,6 +195,7 @@ export default function StockScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Quantity input */}
         <View style={styles.inputBox}>
           <Ionicons name="cube-outline" size={22} color="#777" />
           <TextInput
@@ -179,6 +207,7 @@ export default function StockScreen() {
           />
         </View>
 
+        {/* Submit button */}
         <TouchableOpacity style={styles.submitButton} onPress={submit}>
           <Text style={styles.submitText}>
             {mode === "IN" ? "Add Stock" : "Remove Stock"}

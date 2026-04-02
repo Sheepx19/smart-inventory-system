@@ -17,10 +17,5 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// Server
 const PORT = process.env.PORT || 5000;
-
-// ⭐ IMPORTANT: Bind to 0.0.0.0 so Expo can reach it
-app.listen(PORT, "10.243.83.175", () => {
-  console.log(`Backend running on http://10.243.83.175:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

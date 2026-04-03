@@ -6,7 +6,15 @@ import { API_BASE } from "../constants/api";
 
 export default function ProductDetails() {
   const { id } = useLocalSearchParams();
-  const [product, setProduct] = useState(null);
+  type Product = {
+    name: string;
+    quantity: number;
+    price: number;
+    expiry_at?: string | null;
+    barcode: string;
+    low_stock_threshold: number;
+  };
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -12,12 +12,19 @@ import { router, useLocalSearchParams, Stack } from "expo-router";
 import { API_BASE } from "../constants/api";
 import useBanner from "@/components/Banner";
 
+type Product = {
+  product_id: number;
+  name: string;
+  barcode?: string;
+  quantity: number;
+};
+
 export default function StockScreen() {
   const params = useLocalSearchParams();
   const { Banner, showBanner } = useBanner();
 
-  const [products, setProducts] = useState([]);
-  const [product, setProduct] = useState(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [quantity, setQuantity] = useState("");
@@ -71,10 +78,12 @@ export default function StockScreen() {
             : product.quantity - qty;
 
         // update selected product so UI updates instantly
-        setProduct((prev) => ({
-          ...prev,
-          quantity: updatedQty,
-        }));
+        if (product) {
+          setProduct({
+            ...product,
+            quantity: updatedQty,
+          });
+        }
 
         // update products list so dropdown stays in sync
         setProducts((prev) =>

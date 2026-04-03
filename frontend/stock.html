@@ -7,35 +7,39 @@
 </head>
 <body>
 
-  <div id="banner" class="banner"></div>
+  <div class="container">
 
-  <h1>Stock In / Stock Out</h1>
+    <h1>Stock In / Stock Out</h1>
 
-  <form id="stockForm">
+    <div id="banner" class="banner"></div>
 
-    <label>
-      Product:
-      <select id="product"></select>
-    </label>
+    <form id="stockForm">
 
-    <label>
-      Action:
-      <select id="action" required>
-        <option value="">Select action</option>
-        <option value="IN">Stock In</option>
-        <option value="OUT">Stock Out</option>
-      </select>
-    </label>
+      <label>
+        Product:
+        <select id="product"></select>
+      </label>
 
-    <label>
-      Quantity:
-      <input type="number" id="quantity" min="1" required />
-    </label>
+      <label>
+        Action:
+        <select id="action" required>
+          <option value="">Select action</option>
+          <option value="IN">Stock In</option>
+          <option value="OUT">Stock Out</option>
+        </select>
+      </label>
 
-    <button type="submit">Submit</button>
-  </form>
+      <label>
+        Quantity:
+        <input type="number" id="quantity" min="1" required />
+      </label>
 
-  <a href="index.html" class="back-link">← Back to Home</a>
+      <button type="submit">Submit</button>
+
+    </form>
+
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
 
   <script src="js/stock.js"></script>
 </body>

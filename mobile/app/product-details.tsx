@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { API_BASE } from "../constants/api";
+import { API_URL } from "../constants/api";
 
 export default function ProductDetails() {
   const { id } = useLocalSearchParams();
@@ -18,7 +18,7 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/products/${id}`)
+    fetch(`${API_URL}/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);

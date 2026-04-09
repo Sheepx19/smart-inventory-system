@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { API_BASE } from "../constants/api";
+import { API_URL } from "../constants/api";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,7 +19,7 @@ export default function ProductsScreen() {
   const [lowStockCount, setLowStockCount] = useState(0);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/products`)
+    fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);

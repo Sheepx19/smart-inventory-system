@@ -1,6 +1,32 @@
+console.log("Products router loaded!");
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+
+// ===============================
+// 📊 DASHBOARD ROUTES (MUST BE FIRST)
+// ===============================
+router.get("/dashboard/total-products", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT COUNT(*) AS total FROM products");
+    res.json({ count: rows[0].total });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch total products" });
+  }
+});
+
+router.get("/dashboard/low-stock", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT COUNT(*) AS lowStock FROM products WHERE quantity < 10"
+    );
+    res.json({ count: rows[0].lowStock });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch low stock count" });
+  }
+});
 
 // ===============================
 // GET ALL PRODUCTS
@@ -29,29 +55,6 @@ router.get("/barcode/:code", async (req, res) => {
     const [rows] = await db.query(
       "SELECT * FROM products WHERE barcode = ? LIMIT 1",
       [code]
-    );
-
-    if (!rows.length) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch product" });
-  }
-});
-
-// ===============================
-// ⭐ GET PRODUCT BY ID (NEW ROUTE)
-// ===============================
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [rows] = await db.query(
-      "SELECT * FROM products WHERE product_id = ? LIMIT 1",
-      [id]
     );
 
     if (!rows.length) {
@@ -238,6 +241,29 @@ router.post("/stock-out", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to process stock out" });
+  }
+});
+
+// ===============================
+// GET PRODUCT BY ID (MUST BE LAST)
+// ===============================
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM products WHERE product_id = ? LIMIT 1",
+      [id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch product" });
   }
 });
 

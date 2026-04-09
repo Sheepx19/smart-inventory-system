@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, Stack } from "expo-router";
-import { API_BASE } from "../constants/api";
+import { API_URL } from "../constants/api";
 import useBanner from "@/components/Banner";
 
 type Product = {
@@ -32,7 +32,7 @@ export default function StockScreen() {
 
   // fetch all products once
   useEffect(() => {
-    fetch(`${API_BASE}/api/products`)
+    fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch(() => {});
@@ -57,8 +57,8 @@ export default function StockScreen() {
 
     const endpoint =
       mode === "IN"
-        ? `${API_BASE}/api/products/stock-in`
-        : `${API_BASE}/api/products/stock-out`;
+        ? `${API_URL}/api/products/stock-in`
+        : `${API_URL}/api/products/stock-out`;
 
     try {
       const res = await fetch(endpoint, {

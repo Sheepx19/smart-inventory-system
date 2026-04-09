@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, Stack } from "expo-router";
-import { API_BASE } from "../constants/api";
+import { API_URL } from "../constants/api";
 import useBanner from "@/components/Banner";
 
 export default function AddProductScreen() {
@@ -28,7 +28,7 @@ export default function AddProductScreen() {
 
   // Load all products for duplicate detection
   useEffect(() => {
-    fetch(`${API_BASE}/api/products`)
+    fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => setAllProducts(data))
       .catch(() => {});
@@ -63,7 +63,7 @@ export default function AddProductScreen() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/products`, {
+      const res = await fetch(`${API_URL}/api/products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

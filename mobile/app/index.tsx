@@ -1,20 +1,46 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { API_URL } from "../constants/api";
 
 export default function HomeScreen() {
+  const [totalProducts, setTotalProducts] = useState<number | null>(null);
+  const [lowStock, setLowStock] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [totalRes, lowRes] = await Promise.all([
+        fetch(`${API_URL}/api/products/dashboard/total-products`),
+        fetch(`${API_URL}/api/products/dashboard/low-stock`)
+      ]);
+
+      const totalData = await totalRes.json();
+      const lowData = await lowRes.json();
+
+      setTotalProducts(totalData.count);
+      setLowStock(lowData.count);
+    } catch (err) {
+      console.log("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Hide default header */}
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Custom App Title */}
       <Text style={styles.appTitle}>Stockly</Text>
 
       <Text style={styles.title}>Welcome to Stockly</Text>
       <Text style={styles.subtitle}>Manage your inventory with ease</Text>
 
-      {/* View Products */}
       <TouchableOpacity
         style={styles.card}
         onPress={() => router.push("/products")}
@@ -23,7 +49,6 @@ export default function HomeScreen() {
         <Text style={styles.cardText}>View Products</Text>
       </TouchableOpacity>
 
-      {/* Add Product */}
       <TouchableOpacity
         style={styles.card}
         onPress={() => router.push("/add-product")}
@@ -32,7 +57,6 @@ export default function HomeScreen() {
         <Text style={styles.cardText}>Add Product</Text>
       </TouchableOpacity>
 
-      {/* Stock In / Out */}
       <TouchableOpacity
         style={styles.card}
         onPress={() => router.push("/stock")}
@@ -40,6 +64,28 @@ export default function HomeScreen() {
         <Ionicons name="swap-vertical-outline" size={32} color="#ff9500" />
         <Text style={styles.cardText}>Stock In / Stock Out</Text>
       </TouchableOpacity>
+
+      <Text style={styles.sectionTitle}>Dashboard Overview</Text>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
+      ) : (
+        <>
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardLabel}>Total Products</Text>
+            <Text style={styles.dashboardValue}>
+              {totalProducts !== null ? totalProducts : "--"}
+            </Text>
+          </View>
+
+          <View style={styles.dashboardCard}>
+            <Text style={styles.dashboardLabel}>Low Stock Items</Text>
+            <Text style={styles.dashboardValue}>
+              {lowStock !== null ? lowStock : "--"}
+            </Text>
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -87,5 +133,32 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 18,
     fontWeight: "600",
+  },
+
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginTop: 30,
+    marginBottom: 15,
+  },
+
+  dashboardCard: {
+    backgroundColor: "#fff",
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e5e5e5",
+  },
+
+  dashboardLabel: {
+    fontSize: 16,
+    color: "#555",
+  },
+
+  dashboardValue: {
+    fontSize: 24,
+    fontWeight: "800",
+    marginTop: 5,
   },
 });
